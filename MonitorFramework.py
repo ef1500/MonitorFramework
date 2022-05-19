@@ -30,7 +30,7 @@ def onObject(task):
             task(isObject)
             return isObject
         else:
-            return None
+            pass
     return runTaskOnObject
 
 def onObjectFail(task):
@@ -53,10 +53,13 @@ def onGlobal(task, globalvar, condition):
     Usage: @onGlobal(sendDiscordEmbed, Chapter_Name, "Chapter 1")
     You can use this function to run a task if the check variable matches the test variable
     """
+    globalvar_, condition_ = globalvar, condition
     def onglobal(func, *args, **kwargs):
         func(*args, **kwargs) 
-        if globalvar == condition:
+        if globalvar_ == condition_:
             task()
+        else:
+            pass
     return onglobal
 
 def NotOnGlobal(task, globalvar, condition):
@@ -65,10 +68,13 @@ def NotOnGlobal(task, globalvar, condition):
     Usage: @onGlobal(sendNoChapterMessage, newChapter, "Chapter2")
     You can use this function to run a task if the condition matches the global var
     """
+    globalvar_, condition_ = globalvar, condition
     def notonglobal(func, *args, **kwargs):
         func(*args, **kwargs) 
-        if globalvar != condition:
+        if globalvar_ != condition_:
             task()
+        else:
+            pass
     return notonglobal
 
 def onBool(task, globalvar, condition, reset=True):
@@ -83,6 +89,8 @@ def onBool(task, globalvar, condition, reset=True):
         func(*args, **kwargs)
         if gvar == con:
             task()
+        else:
+            pass
 
     if reset == True:
         globalvar = not globalvar
@@ -92,6 +100,7 @@ def delay(interval):
     """
     Decorator for timed check.
     Runs a task in x time
+    Example Usage: @delay(5)
     """
     def runfunc(func,  *args, **kwargs):
         import time
@@ -103,11 +112,15 @@ def onVarType(task, globalvar, vartype):
     """
     Decorator to compare typenames. If the globalvar's type is the same as 
     the vartype, then run the task.
+    Example Usage: @onVarType(downloadChapter, isNewChapter, str)
     """
+    globalvar_ = globalvar
     def onvartype(func, *args, **kwargs):
         func(*args, **kwargs)
-        if type(globalvar) == vartype:
+        if type(globalvar_) == vartype:
             task()
+        else:
+            pass
 
     return onvartype
 
@@ -120,5 +133,6 @@ def onObjectType(task, vartype):
         object = func(*args, **kwargs)
         if type(object) == vartype:
             task()
+        else:
+            pass
     return onobjecttype
-        

@@ -4,16 +4,15 @@
 # Without having to use the decorators
 
 class BasicMonitor:
-    def __init__(self, APIFunction, args=None):
+    def __init__(self, onMonitor, args=None):
         """
         This function outlines what we are monitoring for.
-        APIObj is the API object that we are monitoring for,
-        APIFunction is the function that we should run to check for that
-        object, and the return object is the object we should return if
-        the conditions are met. The APIargs are the arguments that should be
-        passed to the APIFunction, if any. Defaults to None.
+        OnMonitor is the function that we want to run whenever our
+        other cases succeed. The functions that are taken as arguments
+        elsewhere in this class are the queries to the API/things that we
+        are monitoring for.
         """
-        self.task = APIFunction
+        self.task = onMonitor
 
     def onObject(self, func, *args, **kwargs):
         """
@@ -29,7 +28,8 @@ class BasicMonitor:
         
     def onObjectFail(self, func, *args, **kwargs):
         """
-        Exact opposite of onObject.
+        Exact opposite of onObject. If the object was not found, then nothing will be
+        returned.
         """
         isObject = func(*args, **kwargs)
         if isObject == None:
@@ -41,30 +41,40 @@ class BasicMonitor:
     def onGlobal(self, globalvar, condition, func, *args, **kwargs):
         """
         Check a Variable and if it matches out condition, then run the task
+        Example Usage: onGlobal(newChapter, "Chapter 91", downloadChapter)
         """
         func(*args, **kwargs) 
         if globalvar == condition:
             self.task()
+        else:
+            pass
 
     def NotOnGlobal(self, globalvar, condition, func, *args, **kwargs):
         """
-        Exact Oppisite of onGlobal
+        Exact Oppisite of onGlobal.
+        Example usage: NotOnGlobal(fail, False, sendFailureMessage)
         """
         func(*args, **kwargs) 
         if globalvar != condition:
             self.task()
+        else:
+            pass
 
     def onBool(self, globalvar, condition, func,*args, **kwargs):
         """
-        Check a bool, and if it meets our condition, then run the task
+        Check a bool, and if it meets our condition, then run the task.
+        Example usage: onBool(isNewChapter, True, downloadChapter, path)
         """
         func(*args, **kwargs)
         if globalvar == condition:
             self.task()
+        else:
+            pass
 
     def delay(self, interval, func,  *args, **kwargs):
         """
         Generic delay for any function.
+        Example usage: delay(3, printHello)
         """
         import time
         time.sleep(interval)
@@ -73,7 +83,10 @@ class BasicMonitor:
     def onVarType(self, globalvar, vartype, func, *args, **kwargs):
         """
         Check a variable's type, and then if it matches our condition, then run the task
+        Example usage: onVarType(chapter, str, downloadChapter)
         """
         func(*args, **kwargs)
         if type(globalvar) == vartype:
             self.task()
+        else:
+            pass
