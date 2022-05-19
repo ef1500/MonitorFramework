@@ -9,7 +9,7 @@ Example
 ```python
 from MonitorFramework import onBool
 
-bool newChapter = False
+newChapter = False
 
 def chapterAlert():
     print("New Chapter Found!")
