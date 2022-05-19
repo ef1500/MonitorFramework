@@ -53,10 +53,10 @@ def onGlobal(task, globalvar, condition):
     Usage: @onGlobal(sendDiscordEmbed, Chapter_Name, "Chapter 1")
     You can use this function to run a task if the check variable matches the test variable
     """
-    globalvar_, condition_ = globalvar, condition
-    def onglobal(func, *args, **kwargs):
+    
+    def onglobal(func, globalvar=globalvar, condition=condition, *args, **kwargs):
         func(*args, **kwargs) 
-        if globalvar_ == condition_:
+        if globalvar == condition:
             task()
         else:
             pass
@@ -68,33 +68,44 @@ def NotOnGlobal(task, globalvar, condition):
     Usage: @onGlobal(sendNoChapterMessage, newChapter, "Chapter2")
     You can use this function to run a task if the condition matches the global var
     """
-    globalvar_, condition_ = globalvar, condition
-    def notonglobal(func, *args, **kwargs):
+    def notonglobal(func, globalvar=globalvar, condition=condition, *args, **kwargs):
         func(*args, **kwargs) 
-        if globalvar_ != condition_:
+        if globalvar != condition:
             task()
         else:
             pass
     return notonglobal
 
-def onBool(task, globalvar, condition, reset=True):
+def onGlobalBool(task, globalvar, condition, reset=True):
     """
     Decorator to check a bool, and if applicable, reset it
     Usage: @onBool(sendDiscordMessage, isNewChapter, True)
     This will send a discord message as soon as isNewChapter is set to True, and then it will finally reset the variable
     """
-    gvar = globalvar
-    con = condition
-    def onbool(func, *args, **kwargs):
+    def onglobalbool(func, globalvar=globalvar, condition=condition, *args, **kwargs):
         func(*args, **kwargs)
-        if gvar == con:
+        if globalvar == condition:
             task()
         else:
             pass
 
     if reset == True:
         globalvar = not globalvar
-    return onbool
+    return onglobalbool
+
+def onLocalBool(task, condition):
+    """
+    Decorator to check the return value (bool) of a function
+    and then to run a task if it matches our value
+    Usage: @onLocalBool(sendEmbed, True)
+    """
+    def onlocalbool(func, condition=condition, *args, **kwargs):
+        localvar = func(*args, **kwargs)
+        if localvar == condition:
+            task()
+        else:
+            pass
+    return onlocalbool   
 
 def delay(interval):
     """
@@ -114,10 +125,9 @@ def onVarType(task, globalvar, vartype):
     the vartype, then run the task.
     Example Usage: @onVarType(downloadChapter, isNewChapter, str)
     """
-    globalvar_ = globalvar
-    def onvartype(func, *args, **kwargs):
+    def onvartype(func, globalvar=globalvar, *args, **kwargs):
         func(*args, **kwargs)
-        if type(globalvar_) == vartype:
+        if type(globalvar) == vartype:
             task()
         else:
             pass
