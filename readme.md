@@ -6,7 +6,7 @@ If that doesn't make sense, let me give you an actual example. Let's say you hav
 
 Example
 
-```
+```python
 from MonitorFramework import onBool
 
 bool newChapter = False
