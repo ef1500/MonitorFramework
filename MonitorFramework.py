@@ -19,6 +19,9 @@
 # failed, or timeouted too many times. I needed an easier way to just monitor for chapters only when I needed to.
 # I simply added the @onBool decorator with the sendDiscordMessage variable and then it sent the webhook without 
 # Getting timeouted by the API or making unnecessary requests.
+from inspect import getargvalues
+
+
 def onObject(task):
     """
     Decorator to run a task when the API object we were monitoring for was found.
@@ -62,10 +65,10 @@ def onGlobal(task, globalvar, condition):
             pass
     return onglobal
 
-def NotOnGlobal(task, globalvar, condition):
+def notOnGlobal(task, globalvar, condition):
     """
     Decorator to check a global variable instead of a return object
-    Usage: @onGlobal(sendNoChapterMessage, newChapter, "Chapter2")
+    Usage: @notOnGlobal(sendNoChapterMessage, newChapter, "Chapter2")
     You can use this function to run a task if the condition matches the global var
     """
     def notonglobal(func, globalvar=globalvar, condition=condition, *args, **kwargs):
@@ -76,9 +79,10 @@ def NotOnGlobal(task, globalvar, condition):
             pass
     return notonglobal
 
-def onGlobalBool(task, globalvar, condition, reset=True):
+def onGlobalBool(task, globalvar, condition):
     """
-    Decorator to check a bool, and if applicable, reset it
+    Decorator to check a bool, and do work if the bool is true
+    (I Didn't know you couldn't update decorator values and I got shadowbanned on stackoverflow for asking)
     Usage: @onBool(sendDiscordMessage, isNewChapter, True)
     This will send a discord message as soon as isNewChapter is set to True, and then it will finally reset the variable
     """
@@ -88,9 +92,6 @@ def onGlobalBool(task, globalvar, condition, reset=True):
             task()
         else:
             pass
-
-    if reset == True:
-        globalvar = not globalvar
     return onglobalbool
 
 def onLocalBool(task, condition):
@@ -146,3 +147,47 @@ def onObjectType(task, vartype):
         else:
             pass
     return onobjecttype
+
+def executeReturn(task):
+    """
+    Decorator to run a function, then run the value that it returns.
+    This is useful if you have a monitor that returns something when it exists,
+    and you wanted to download that thing when it exists, for example.
+    This will not check before executing, it will execute the return regardless
+    This Decorator will run the return object as a parameter to the task
+    specified
+    """
+    def executereturn(func, *args, **kwargs):
+        object = func(*args, **kwargs)
+        return task(object)
+    
+    return executeReturn
+
+def c_executeReturn(task, condition):
+    """
+    This decorator will Execute a return object on condition/Value.
+    This will not check types, that is reserved for another decorator.
+    This Decorator will run the return object as a parameter to the task
+    specified
+    """
+    def c_executereturn(func, *args, **kwargs):
+        object = func(*args, **kwargs)
+        if object == condition:
+            return task(object)
+        else:
+            pass
+    return c_executereturn 
+
+def ct_executeReturn(task, vartype):
+    """
+    This Decorator will run the return object as a parameter to the task
+    specified if the condition is met
+    """
+    def ct_executereturn(func, *args, **kwargs):
+        object = func(*args, **kwargs)
+        if type(object) == vartype:
+            return task(object)
+        else:
+            pass
+    return ct_executereturn
+

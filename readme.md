@@ -7,18 +7,21 @@ If that doesn't make sense, let me give you an actual example. Let's say you hav
 Example
 
 ```python
-from MonitorFramework import onBool
+from MonitorFramework import onGlobalBool
 
-newChapter = False
+checkForChapters = True # Should we check for chapters?
 
-def chapterAlert():
-    print("New Chapter Found!")
+def apiCall():
+    print("Querying Api....")
 
-# Will Monitor the variable newChapter for the True condition
-# And once the condition is true, it will then run the function
-@onBool(chapterAlert, newChapter, True)
+def printQuery():
+    print("ApiQuery")
+
+# Will Check the variable checkForChapters for the True condition
+# And if the condition is true, it will then run the function
+@onGlobalBool(printQuery, checkForChapters, True)
 def CheckForChapter():
-    newChapter = True
+    apiCall()
 
 ```
 

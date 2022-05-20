@@ -2,26 +2,37 @@
 # Written by ef1500
 # Purpose: To provide functions similar to the decorators that allow you to check for things
 # Without having to use the decorators
+# There's also some extended functionality here. 
+# You can monitor for certain objects to become true, unlike with the decorators, which is quite nice.
 
 class BasicMonitor:
-    def __init__(self, onMonitor, args=None):
+    """
+    Basic Monitor Class. Allows for simple things, like monitoring for a bool to become true
+    or for an object to have a certain value before running the task.
+    """
+    def __init__(self, task, condition=None, value=None, type_=None):
         """
-        This function outlines what we are monitoring for.
+        This outlines what we are monitoring for.
         OnMonitor is the function that we want to run whenever our
-        other cases succeed. The functions that are taken as arguments
-        elsewhere in this class are the queries to the API/things that we
-        are monitoring for.
+        other cases succeed.
         """
-        self.task = onMonitor
+        self.task = task
+        self.Auxililary = None
+        
+        self.condition = condition      # If we want to monitor for a condition, we set this
+        self.value = value              # If we want to monitor for a value, we set this
+        self.type = type_               # If we want to monitor for a type, we set this
 
     def onObject(self, func, *args, **kwargs):
         """
-        Run a task when the API object we were monitoring for was found.
-        example usage: onObject(checkForChapter, "Citrus")
+        Run a task when ANY API object was returned.
+        This will Monitor for ANY type except None. You may want to use a different function to
+        narrow down what you're monitoring for. 
+        example usage: onObject(checkForChapter, "Citrus") 
         """
         isObject = func(*args, **kwargs)
         if isObject != None:
-            self.task(isObject)
+            self.task()
             return isObject
         if isObject == None:
             return isObject
@@ -60,13 +71,13 @@ class BasicMonitor:
         else:
             pass
 
-    def onBool(self, globalvar, condition, func,*args, **kwargs):
+    def onLocal(self, condition, func,*args, **kwargs):
         """
-        Check a bool, and if it meets our condition, then run the task.
+        Check the return value of the function, then run the task if the conditions are met.
         Example usage: onBool(isNewChapter, True, downloadChapter, path)
         """
-        func(*args, **kwargs)
-        if globalvar == condition:
+        object = func(*args, **kwargs)
+        if object == condition:
             self.task()
         else:
             pass
@@ -90,3 +101,18 @@ class BasicMonitor:
             self.task()
         else:
             pass
+    
+    def executeReturn(self, func, *args, **kwargs):
+        """
+        Run a task when ANY API object was returned.
+        This will Monitor for ANY type except None. You may want to use a different function to
+        narrow down what you're monitoring for. 
+        example usage: onObject(checkForChapter, "Citrus")
+        Note: This will run the task with the object as the params.
+        """
+        isObject = func(*args, **kwargs)
+        if isObject != None:
+            self.task(isObject)
+            return isObject
+        if isObject == None:
+            return isObject
